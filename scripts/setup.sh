@@ -179,7 +179,7 @@ fi
 makeDir $TEMPDIR
 makeDir $DOWNLOADSDIR
 
-if [ ! -d $INSTALLDIR ]; then
+if [ -d $INSTALLDIR ]; then
   echo "FrontStack is already installed. Nothing to do"
   exit 0
 fi
