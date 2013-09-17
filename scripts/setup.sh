@@ -108,17 +108,18 @@ downloadStatus() {
       sleep 1
 
       local speed=$(echo `cat $1 | grep -oh '\([0-9.]\+[%].*[0-9.][s|m|h|d]\)' | tail -1`)
-      echo -n "$speed"
+      echo -n "Downloading... $speed"
       echo -n R | tr 'R' '\r'
       # evaluate exit code?
       if [ -f $2 ]; then
         sleep 1
         local error=$(echo `cat $2`)
         if [ $error != '0' ]; then
+          echo 
           if [ $error == '6' ]; then
             echo "Server authentication error, configure setup.ini properly. See $OUTPUTLOG"
           else
-            echo "Download error, exit code $2. See $OUTPUTLOG"
+            echo "Download error, exit code '$error'. See $OUTPUTLOG"
           fi
           exit $?
         fi
@@ -200,7 +201,7 @@ cat <<EOF
 
 EOF
 
-wget `getProxyAuth` http://yahoo.com -O $DOWNLOADSDIR/test.html > $OUTPUTLOG 2>&1
+wget $(`getProxyAuth`) http://yahoo.com -O $DOWNLOADSDIR/test.html > $OUTPUTLOG 2>&1
 checkExitCode "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $OUTPUTLOG"
 rm -f $DOWNLOADSDIR/test.*
 
@@ -210,7 +211,7 @@ if [ $fs_format == '7z' ] || [ $fs_format == 'zip' ]; then
   if [ `exists 7z` -eq 0 ]; then
     if [ ! -f $TEMPDIR/7zip/7z ]; then
       echo -n "Downloding 7z... "
-      wget `getProxyAuth` $SZIPURL -O $DOWNLOADSDIR/7z.tar.gz >> $OUTPUTLOG 2>&1
+      wget $(`getProxyAuth`) $SZIPURL -O $DOWNLOADSDIR/7z.tar.gz >> $OUTPUTLOG 2>&1
       checkExitCode "Error while trying to download 7z. See $OUTPUTLOG"
       echo "done!"
 
@@ -240,13 +241,12 @@ if [ -f $DOWNLOADSDIR/download ]; then
   rm -f $DOWNLOADSDIR/download
 fi
 
-echo "Downloading... "
-
+# download stack distribution
 if [ -z $fs_http_user ]; then
-    `wget $(getProxyAuth) -F $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1 && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
+    `wget $(`getProxyAuth`) -F $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1 && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
     downloadStatus $OUTPUTLOG $DOWNLOADSDIR/download
 else
-  `wget $(getProxyAuth) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1  && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
+  `wget $(`getProxyAuth`) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1  && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
   downloadStatus $OUTPUTLOG $DOWNLOADSDIR/download
 fi
 checkExitCode "Error while trying to download FrontStack. See $OUTPUTLOG"
@@ -300,7 +300,7 @@ fi
 
 # installing OS packages (beta)
 for pkg in $install_packages; do
-  if [ `exists $pkg` -eq 0 ];
+  if [ `exists $pkg` -eq 0 ]; then
     echo "Installing $pkg..."
     installPackage $pkg >> $OUTPUTLOG 2>&1
     checkExitCode "Cannot install '$pkg' package. See $OUTPUTLOG"
