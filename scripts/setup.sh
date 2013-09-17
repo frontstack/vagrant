@@ -204,7 +204,7 @@ cat <<EOF
 EOF
 
 wget `getProxyAuth` http://yahoo.com -O $DOWNLOADSDIR/test.html > $OUTPUTLOG 2>&1
-checkExitCode "No Internet HTTP connectivity.\nCheck if you are behind a proxy and your authentication credentials.\nSee $OUTPUTLOG"
+checkExitCode "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $OUTPUTLOG"
 rm -f $DOWNLOADSDIR/test.*
 
 exit
