@@ -300,12 +300,13 @@ fi
 install_packages=($install_packages)
 for pkg in "${install_packages[@]}"
 do
-  if [ `exists "$pkg"` -eq 0 ]; then
+  if [ `exists "$pkg"` -eq 0 ]; then
     echo "Installing $pkg..."
     installPackage $pkg >> $OUTPUTLOG 2>&1
     checkExitCode "Cannot install '$pkg' package. See $OUTPUTLOG"
   fi
 done
+
 
 # exec customized post install script
 if [ ! -n $install_script ] && [ -f $install_script ]; then
