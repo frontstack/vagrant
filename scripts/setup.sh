@@ -21,8 +21,8 @@ INSTALLDIR='/home/vagrant/frontstack'
 $fs_bashprofile=1
 $fs_format='tar.gz'
 $fs_user='vagrant'
-$fs_download='http://dropbox.es'
-$install_packages='git gcc'
+$fs_download='http://dl.dropboxusercontent.com/u/22374892/frontstack-0.1.0-x64.tar.gz'
+$install_packages='nano git gcc'
 
 checkExitCode() {
   if [ $? -ne 0 ]; then
