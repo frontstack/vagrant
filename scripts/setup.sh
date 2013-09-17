@@ -173,9 +173,6 @@ if [ -f $CONFIGFILE ]; then
   if [ ! -z $fs_install ]; then
     INSTALLDIR=$fs_install
   fi
-else
-  echo "Config file not found. Cannot continue"
-  exit 1
 fi
 
 # creates temporal directories
