@@ -190,28 +190,26 @@ cat <<EOF
          Welcome to FrontStack
  -------------------------------------
   
-   VM setup and provisioning script
+     Setup and provisioning script
 
  VM requirements:
   * GNU/Linux 64 bits
   * 768MB RAM
   * 1GB of hard disk free space
   * Internet access (HTTP/s protocol)
-
+  * Root access level
 
 EOF
 
-wget $(`getProxyAuth`) http://yahoo.com -O $DOWNLOADSDIR/test.html > $OUTPUTLOG 2>&1
+wget $(getProxyAuth) http://yahoo.com -O $DOWNLOADSDIR/test.html > $OUTPUTLOG 2>&1
 checkExitCode "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $OUTPUTLOG"
 rm -f $DOWNLOADSDIR/test.*
-
-exit
 
 if [ $fs_format == '7z' ] || [ $fs_format == 'zip' ]; then
   if [ `exists 7z` -eq 0 ]; then
     if [ ! -f $TEMPDIR/7zip/7z ]; then
       echo -n "Downloding 7z... "
-      wget $(`getProxyAuth`) $SZIPURL -O $DOWNLOADSDIR/7z.tar.gz >> $OUTPUTLOG 2>&1
+      wget $(getProxyAuth) $SZIPURL -O $DOWNLOADSDIR/7z.tar.gz >> $OUTPUTLOG 2>&1
       checkExitCode "Error while trying to download 7z. See $OUTPUTLOG"
       echo "done!"
 
@@ -243,10 +241,10 @@ fi
 
 # download stack distribution
 if [ -z $fs_http_user ]; then
-    `wget $(`getProxyAuth`) -F $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1 && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
+    `wget $(getProxyAuth) -F $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1 && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
     downloadStatus $OUTPUTLOG $DOWNLOADSDIR/download
 else
-  `wget $(`getProxyAuth`) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1  && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
+  `wget $(getProxyAuth) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $DOWNLOADSDIR/frontstack-latest.$fs_format > $OUTPUTLOG 2>&1  && echo $? > $DOWNLOADSDIR/download || echo $? > $DOWNLOADSDIR/download` &
   downloadStatus $OUTPUTLOG $DOWNLOADSDIR/download
 fi
 checkExitCode "Error while trying to download FrontStack. See $OUTPUTLOG"
@@ -283,7 +281,7 @@ if [ ! -z $fs_user ]; then
   if [ $fs_bashprofile == '1' ]; then
     if [ -d "/home/$fs_user" ]; then
       if [ -f "/home/$fs_user/.bash_profile" ]; then
-        if [ -z $(echo `cat /home/$fs_user/.bash_profile | grep $INSTALLDIR`) ]; then
+        if [ $(exists `cat /home/$fs_user/.bash_profile | grep $INSTALLDIR`) -eq 0 ]; then
           echo ". $INSTALLDIR/bash.sh" >> "/home/$fs_user/.bash_profile"
         fi
       else
@@ -299,15 +297,17 @@ if [ ! -z $fs_user ]; then
 fi
 
 # installing OS packages (beta)
-for pkg in $install_packages; do
-  if [ `exists $pkg` -eq 0 ]; then
+install_packages=($install_packages)
+for pkg in "${install_packages[@]}"
+do
+  if [ `exists "$pkg"` -eq 0 ]; then
     echo "Installing $pkg..."
     installPackage $pkg >> $OUTPUTLOG 2>&1
     checkExitCode "Cannot install '$pkg' package. See $OUTPUTLOG"
   fi
 done
 
-# exec custom post install script
+# exec customized post install script
 if [ ! -n $install_script ] && [ -f $install_script ]; then
   . "$install_script"
 fi
@@ -316,6 +316,7 @@ cat <<EOF
 
 FrontStack installed in: "$INSTALLDIR"
 
+To have fun, run:
 $ vagrant ssh
 
 EOF
