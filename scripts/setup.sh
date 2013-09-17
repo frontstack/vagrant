@@ -186,6 +186,7 @@ if [ -d $INSTALLDIR ] && [ -f $INSTALLDIR/VERSION ]; then
 fi
 
 cat <<EOF
+
  -------------------------------------
          Welcome to FrontStack
  -------------------------------------
