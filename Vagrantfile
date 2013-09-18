@@ -1,7 +1,3 @@
-# provisining and setup script
-$provisionScript = <<SCRIPT
-/home/vagrant/scripts/setup.sh
-SCRIPT
 
 Vagrant.configure("2") do |config|
   config.vm.box = "fronstack"
@@ -26,6 +22,10 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./workspace", "/home/vagrant/workspace", id: "workspace"
   config.vm.synced_folder "./scripts", "/home/vagrant/scripts", id: "scripts"
 
-  #config.vm.provision :shell, :path => "scripts/setup.sh"
-  config.vm.provision :shell, :inline => $provisionScript
+  #config.vm.provision :shell, :inline => $provisionScript
+  config.vm.provision "shell" do |s|
+    s.path = "scripts/setup.sh"
+    s.args   = "'/home/vagrant/scripts/setup.ini'"
+  end
+
 end
