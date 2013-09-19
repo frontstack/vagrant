@@ -1,27 +1,23 @@
 #!/bin/bash
 #
-# FrontStack VM installation and provisioning script
+# FrontStack VM installation and provisioning script (full customizable)
 # @author Tomas Aparicio
 # @version 0.1
 # @license WTFPL
-#
-# TODO
-# - Custom scripts pre/post install
 #
 
 SZIPURL=http://dl.bintray.com/frontstack/stable/7z/7z-9.20-x64.tar.gz
 TEMPDIR=/tmp/frontstack
 DOWNLOADSDIR=$TEMPDIR/downloads
 OUTPUTLOG=$TEMPDIR/output.log
-# default values (can be overwritten in setup.ini)
 CONFIGFILE="$(dirname $(readlink -f "$0")})/$(echo ${0##*/} | sed 's/\.[^\.]*$//').ini"
 INSTALLDIR='/home/vagrant/frontstack'
 
-# default config (customize it from setup.ini)
-fs_bashprofile=1
+# default install options (you can customize them from setup.ini)
+fs_bash_profile='1'
 fs_format='tar.gz'
 fs_user='vagrant'
-fs_download='http://dl.dropboxusercontent.com/u/22374892/frontstack-0.1.0-x64.tar.gz'
+fs_download='http://sourceforge.net/projects/frontstack/files/releases/0.1/frontstack-0.1.0-x64.tar.gz/download'
 install_packages='nano git gcc'
 
 checkExitCode() {
@@ -279,7 +275,7 @@ if [ ! -z $fs_user ]; then
   checkExitCode "Error while trying to set files permissions. See $OUTPUTLOG"
 
   # load FrontStack environment variables at session startup (.bash_profile, .profile, .bashrc)
-  if [ $fs_bashprofile == '1' ]; then
+  if [ $fs_bash_profile == '1' ]; then
     if [ -d "/home/$fs_user" ]; then
       if [ -f "/home/$fs_user/.bash_profile" ]; then
         if [ $(exists `cat /home/$fs_user/.bash_profile | grep $INSTALLDIR`) -eq 0 ]; then
@@ -308,7 +304,6 @@ do
   fi
 done
 
-
 # exec customized post install script
 if [ ! -n $install_script ] && [ -f $install_script ]; then
   . "$install_script"
@@ -318,7 +313,7 @@ cat <<EOF
 
 FrontStack installed in: "$INSTALLDIR"
 
-To have fun, run:
+To have fun, simply run:
 $ vagrant ssh
 
 EOF
