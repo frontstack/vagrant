@@ -9,7 +9,7 @@
 szip_url=http://dl.bintray.com/frontstack/stable/7z/7z-9.20-x64.tar.gz
 temporal=/tmp/frontstack
 download_dir=$temporal/downloads
-out_log=$temporal/output.log
+output=$temporal/output.log
 config_file="$(dirname $(readlink -f "$0")})/$(echo ${0##*/} | sed 's/\.[^\.]*$//').ini"
 install_dir='/home/vagrant/frontstack'
 
@@ -109,9 +109,9 @@ download_status() {
         if [ $error != '0' ]; then
           echo 
           if [ $error == '6' ]; then
-            echo "Server authentication error, configure setup.ini properly. See $out_log"
+            echo "Server authentication error, configure setup.ini properly. See $output"
           else
-            echo "Download error, exit code '$error'. See $out_log"
+            echo "Download error, exit code '$error'. See $output"
           fi
           exit $?
         fi
@@ -137,8 +137,8 @@ fi
 
 # disabling SELinux if enabled
 if [ -f "/usr/sbin/getenforce" ] ; then
-    selinux_status=`/usr/sbin/getenforce`
-    /usr/sbin/setenforce 0 2> /dev/null
+  selinux_status=`/usr/sbin/getenforce`
+  /usr/sbin/setenforce 0 2> /dev/null
 fi
 
 # read config file
@@ -187,22 +187,22 @@ cat <<EOF
 
 EOF
 
-wget $(proxy_auth) http://yahoo.com -O $download_dir/test.html > $out_log 2>&1
-check_exit "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $out_log"
+wget $(proxy_auth) http://yahoo.com -O $download_dir/test.html > $output 2>&1
+check_exit "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $output"
 rm -f $download_dir/test.*
 
 if [ $fs_format == '7z' ] || [ $fs_format == 'zip' ]; then
   if [ `exists 7z` -eq 0 ]; then
     if [ ! -f $temporal/7zip/7z ]; then
       echo -n "Downloding 7z... "
-      wget $(proxy_auth) $szip_url -O $download_dir/7z.tar.gz >> $out_log 2>&1
-      check_exit "Error while trying to download 7z. See $out_log"
+      wget $(proxy_auth) $szip_url -O $download_dir/7z.tar.gz >> $output 2>&1
+      check_exit "Error while trying to download 7z. See $output"
       echo "done!"
 
       echo -n "Extracting 7z... "
       make_dir $temporal/7zip/
-      tar xvfz $download_dir/7z.tar.gz -C $temporal/7zip/ >> $out_log 2>&1
-      check_exit "Error while trying to extract 7z.tar.gz. See $out_log"
+      tar xvfz $download_dir/7z.tar.gz -C $temporal/7zip/ >> $output 2>&1
+      check_exit "Error while trying to extract 7z.tar.gz. See $output"
       echo "done!"
       COMPRESSBIN=$temporal/7zip/7z
     fi
@@ -227,13 +227,13 @@ fi
 
 # download stack distribution
 if [ -z $fs_http_user ]; then
-    `wget $(proxy_auth) -F $fs_download -O $download_dir/frontstack-latest.$fs_format > $out_log 2>&1 && echo $? > $download_dir/download || echo $? > $download_dir/download` &
-    download_status $out_log $download_dir/download
+    `wget $(proxy_auth) -F $fs_download -O $download_dir/frontstack-latest.$fs_format > $output 2>&1 && echo $? > $download_dir/download || echo $? > $download_dir/download` &
+    download_status $output $download_dir/download
 else
-  `wget $(proxy_auth) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $download_dir/frontstack-latest.$fs_format > $out_log 2>&1  && echo $? > $download_dir/download || echo $? > $download_dir/download` &
-  download_status $out_log $download_dir/download
+  `wget $(proxy_auth) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $download_dir/frontstack-latest.$fs_format > $output 2>&1  && echo $? > $download_dir/download || echo $? > $download_dir/download` &
+  download_status $output $download_dir/download
 fi
-check_exit "Error while trying to download FrontStack. See $out_log"
+check_exit "Error while trying to download FrontStack. See $output"
 
 if [ $fs_format == 'rpm' ]; then
   if [ `exists rpm` -eq 0 ]; then
@@ -241,26 +241,26 @@ if [ $fs_format == 'rpm' ]; then
   fi
 
   echo -n "Installing RPM... "
-  rpm -ivh $download_dir/frontstack-latest.$fs_format >> $out_log 2>&1
-  check_exit "Error while trying to install the RPM. See $out_log"
+  rpm -ivh $download_dir/frontstack-latest.$fs_format >> $output 2>&1
+  check_exit "Error while trying to install the RPM. See $output"
   echo 'done!'
 else
   echo -n "Extracting (this may take some minutes)... "
   make_dir $install_dir
   if [ $fs_format == '7z' ]; then
-    $COMPRESSBIN e -o$install_dir -y $download_dir/frontstack-latest.$fs_format >> $out_log 2>&1
+    $COMPRESSBIN e -o$install_dir -y $download_dir/frontstack-latest.$fs_format >> $output 2>&1
   else
-    $COMPRESSBIN xvfz $download_dir/frontstack-latest.$fs_format -C $install_dir >> $out_log 2>&1
+    $COMPRESSBIN xvfz $download_dir/frontstack-latest.$fs_format -C $install_dir >> $output 2>&1
   fi
-  check_exit "Error while trying to extract FrontStack. See $out_log"
+  check_exit "Error while trying to extract FrontStack. See $output"
   echo 'done!'
 fi
 
 # set file permissions (by default Vagrant uses the root user to run the provisioning tasks/scripts)
 if [ ! -z $fs_user ]; then
   echo "Setting permissions for the '$fs_user' user..."
-  chown -R $fs_user:users $install_dir >> $out_log
-  check_exit "Error while trying to set files permissions. See $out_log"
+  chown -R $fs_user:users $install_dir >> $output
+  check_exit "Error while trying to set files permissions. See $output"
 
   # load FrontStack environment variables at session startup (.bash_profile, .profile, .bashrc)
   if [ $fs_bash_profile == '1' ]; then
@@ -274,7 +274,7 @@ if [ ! -z $fs_user ]; then
         echo "#!/bin/bash" > "/home/$fs_user/.bash_profile"
         echo ". $install_dir/bash.sh" >> "/home/$fs_user/.bash_profile"
         # set permissions
-        chown $fs_user:users "/home/$fs_user/.bash_profile" >> $out_log
+        chown $fs_user:users "/home/$fs_user/.bash_profile" >> $output
         chmod +x "/home/$fs_user/.bash_profile"
       fi
     fi
@@ -287,8 +287,8 @@ for pkg in "${install_packages[@]}"
 do
   if [ `exists "$pkg"` -eq 0 ]; then
     echo "Installing $pkg..."
-    install_package $pkg >> $out_log 2>&1
-    check_exit "Cannot install '$pkg' package. See $out_log"
+    install_package $pkg >> $output 2>&1
+    check_exit "Cannot install '$pkg' package. See $output"
   fi
 done
 
@@ -299,8 +299,8 @@ fi
 
 # re-enable SELinux
 if [ -f "/usr/sbin/getenforce" ] ; then
-    selinux_status=`/usr/sbin/getenforce`
-    /usr/sbin/setenforce 1 2> /dev/null
+  selinux_status=`/usr/sbin/getenforce`
+  /usr/sbin/setenforce 1 2> /dev/null
 fi
 
 cat <<EOF
