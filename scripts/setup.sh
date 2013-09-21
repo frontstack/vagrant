@@ -22,8 +22,7 @@ install_packages='nano git gcc'
 
 check_exit() {
   if [ $? -ne 0 ]; then
-    echo $1
-    exit 1
+    echo $1 && exit 1
   fi
 }
 
@@ -124,14 +123,12 @@ download_status() {
 
 # check OS architecture
 if [ "`uname -m`" != "x86_64" ]; then
-  echo 'FrontStack only supports 64 bit based OS. Cannot continue'
-  exit 1
+  echo 'FrontStack only supports 64 bit based OS. Cannot continue' && exit 1
 fi
 
 # check if run as root
 if [ "`id -u`" -ne 0 ]; then
-  echo 'You must run the installer like a root user. Cannot continue'
-  exit 1
+  echo 'You must run the installer like a root user. Cannot continue' && exit 1
 fi
 
 if [ ! -z $1 ] && [ -f $1 ]; then
@@ -155,8 +152,7 @@ if [ -f $config_file ]; then
   fi
   
   if [ -z $config.section.frontstack ]; then
-    echo "FrontStack config missing. Required"
-    exit
+    echo "FrontStack config missing. Required" && exit 0
   fi
   config.section.frontstack
 
@@ -174,8 +170,7 @@ make_dir $temporal
 make_dir $download_dir
 
 if [ -d $install_dir ] && [ -f $install_dir/VERSION ]; then
-  echo "FrontStack is already installed. Nothing to do"
-  exit 0
+  echo "FrontStack is already installed. Nothing to do" && exit 0
 fi
 
 cat <<EOF
@@ -243,8 +238,7 @@ check_exit "Error while trying to download FrontStack. See $out_log"
 
 if [ $fs_format == 'rpm' ]; then
   if [ `exists rpm` -eq 0 ]; then
-    echo "No rpm binary found. Cannot continue"
-    exit 1
+    echo "No rpm binary found. Cannot continue" && exit 1
   fi
 
   echo -n "Installing RPM... "
