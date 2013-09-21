@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# FrontStack VM installation and provisioning script (full customizable)
+# FrontStack VM installation and provisioning script
 # @author Tomas Aparicio
 # @version 0.1
 # @license WTFPL
 #
 
-szip_url=http://dl.bintray.com/frontstack/stable/7z/7z-9.20-x64.tar.gz
+szip_url=http://sourceforge.net/projects/frontstack/files/packages/7zip/7z-9.20-x64.tar.gz/download
 temporal=/tmp/frontstack
 download_dir=$temporal/downloads
 output=$temporal/output.log
@@ -14,11 +14,11 @@ config_file="$(dirname $(readlink -f "$0")})/$(echo ${0##*/} | sed 's/\.[^\.]*$/
 install_dir='/home/vagrant/frontstack'
 
 # default install options (you can customize them from setup.ini)
-fs_bash_profile='1'
+fs_bash_profile=1
 fs_format='tar.gz'
 fs_user='vagrant'
 fs_download='http://sourceforge.net/projects/frontstack/files/releases/0.1/frontstack-0.1.0-x64.tar.gz/download'
-install_packages='nano git gcc'
+os_packages='git gcc make'
 
 check_exit() {
   if [ $? -ne 0 ]; then
@@ -282,7 +282,7 @@ if [ ! -z $fs_user ]; then
 fi
 
 # installing OS packages (beta)
-install_packages=($install_packages)
+install_packages=("$os_packages $install_packages")
 for pkg in "${install_packages[@]}"
 do
   if [ `exists "$pkg"` -eq 0 ]; then
