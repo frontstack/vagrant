@@ -282,7 +282,8 @@ if [ ! -z $fs_user ]; then
 fi
 
 # installing OS packages (beta)
-install_packages=("$os_packages $install_packages")
+install_packages="$os_packages $install_packages"
+install_packages=("$install_packages")
 for pkg in "${install_packages[@]}"
 do
   if [ `exists "$pkg"` -eq 0 ]; then
