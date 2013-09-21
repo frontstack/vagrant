@@ -151,10 +151,9 @@ if [ -f $config_file ]; then
     config.section.auth
   fi
   
-  if [ -z $config.section.frontstack ]; then
-    echo "FrontStack config missing. Required" && exit 0
+  if [ `exists config.section.frontstack` -eq 1 ]; then
+    config.section.frontstack
   fi
-  config.section.frontstack
 
   if [ ! -z $config.section.proxy ]; then
     config.section.proxy
