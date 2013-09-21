@@ -298,7 +298,7 @@ if [ ! -n $install_script ] && [ -f $install_script ]; then
 fi
 
 # re-enable SELinux
-if [ -f "/usr/sbin/getenforce" ] ; then
+if [ -f "/usr/sbin/getenforce" ]; then
   selinux_status=`/usr/sbin/getenforce`
   /usr/sbin/setenforce 1 2> /dev/null
 fi
