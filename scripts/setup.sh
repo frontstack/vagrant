@@ -17,7 +17,7 @@ install_dir='/home/vagrant/frontstack'
 fs_bash_profile=1
 fs_format='tar.gz'
 fs_user='vagrant'
-fs_download='http://sourceforge.net/projects/frontstack/files/releases/0.1/frontstack-0.1.0-x64.tar.gz/download'
+fs_download='http://sourceforge.net/projects/frontstack/files/latest/download'
 os_packages='git gcc make'
 
 check_exit() {
@@ -245,7 +245,7 @@ if [ $fs_format == 'rpm' ]; then
   check_exit "Error while trying to install the RPM. See $output"
   echo 'done!'
 else
-  echo -n "Extracting (this may take some minutes)... "
+  echo -n 'Extracting (this may take some minutes)... '
   make_dir $install_dir
   if [ $fs_format == '7z' ]; then
     $COMPRESSBIN e -o$install_dir -y $download_dir/frontstack-latest.$fs_format >> $output 2>&1
