@@ -24,6 +24,10 @@
   * 1GB of hard disk free space
   * Internet access (HTTP/S)
 
+## setup.ini options
+
+`TODO`
+
 ## Issues
 
 FrontStack is in beta stage, some things maybe are broken.
