@@ -2,7 +2,7 @@
 #
 # FrontStack VM installation and provisioning script
 # @author Tomas Aparicio
-# @version 0.1
+# @version 0.2
 # @license WTFPL
 #
 
@@ -178,7 +178,7 @@ cat <<EOF
          Welcome to FrontStack
  -------------------------------------
 
- VM requirements:
+ VM minimal requirements:
   * GNU/Linux 64 bits
   * 768MB RAM
   * 1GB of hard disk free space
@@ -218,7 +218,7 @@ else
 fi
 
 echo "Downloading lastest version of the FrontStack dev environment"
-echo "Note this may take some minutes depending on your connection bandwidth... "
+echo "Note this may take some minutes depending of your connection bandwidth... "
 echo 
 
 if [ -f $download_dir/download ]; then
@@ -266,7 +266,7 @@ if [ ! -z $fs_user ]; then
   if [ $fs_bash_profile == '1' ]; then
     if [ -d "/home/$fs_user" ]; then
       if [ -f "/home/$fs_user/.bash_profile" ]; then
-        if [ $(exists `cat /home/$fs_user/.bash_profile | grep $install_dir`) -eq 0 ]; then
+        if [ $(exists `cat /home/$fs_user/.bash_profile | grep "$install_dir"`) -eq 1 ]; then
           echo ". $install_dir/bash.sh" >> "/home/$fs_user/.bash_profile"
         fi
       else
@@ -308,7 +308,7 @@ cat <<EOF
 
 FrontStack installed in: "$install_dir"
 
-To have fun, simply run:
+To have fun, simply run from your installation directory:
 $ vagrant ssh
 
 EOF
