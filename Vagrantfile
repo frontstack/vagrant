@@ -24,9 +24,11 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./workspace", "/home/vagrant/workspace", id: "workspace"
   config.vm.synced_folder "./scripts", "/home/vagrant/scripts", id: "scripts"
 
+  #
+  # Do not delete the following config if you don't know exactly what you are doing
+  #
   config.vm.provision "shell" do |s|
     s.path = "scripts/setup.sh"
     s.args = "'/home/vagrant/scripts/setup.ini'"
   end
-
 end
