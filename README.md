@@ -20,22 +20,20 @@
 ## Guest requirements
 
   * GNU/Linux 64 bits
-  * 512MB RAM
-  * 1GB of hard disk free space
+  * 512MB RAM (>=768MB recommended)
+  * 2GB of hard disk free space
   * Internet access (HTTP/S)
 
 ## setup.ini options
 
-`TODO`
+See `setup.sample.ini` file. You should remove the config options you don't need.
+
+In order to use it, you must rename it to `setup.ini`.
 
 ## Issues
 
 FrontStack is in beta stage, some things maybe are broken.
 Please, feel free to report any issue you experiment via Github.
-
-## TODO
-
-* Vagrant plugin
 
 ## License
 
