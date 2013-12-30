@@ -18,7 +18,7 @@ fs_bash_profile=1
 fs_format='tar.gz'
 fs_user='vagrant'
 fs_download='http://sourceforge.net/projects/frontstack/files/latest/download'
-os_packages='git gcc make'
+os_packages='gcc make nano wget'
 
 check_exit() {
   if [ $? -ne 0 ]; then
@@ -172,6 +172,10 @@ if [ -d $install_dir ] && [ -f $install_dir/VERSION ]; then
   echo "FrontStack is already installed. Nothing to do" && exit 0
 fi
 
+if [ `exists wget` -eq 0 ]; then
+  install_package wget > /dev/null
+fi
+
 cat <<EOF
 
  -------------------------------------
@@ -181,9 +185,8 @@ cat <<EOF
  VM minimal requirements:
   * GNU/Linux 64 bits
   * 768MB RAM
-  * 1GB of hard disk free space
+  * 2GB of hard disk free space
   * Internet access (HTTP/s protocol)
-  * Root access level
 
 EOF
 
@@ -294,7 +297,7 @@ do
 done
 
 # exec customized post install script
-if [ ! -n $install_script ] && [ -f $install_script ]; then
+if [ ! -n $install_script ] && [ -x $install_script ]; then
   . "$install_script"
 fi
 
@@ -308,7 +311,7 @@ cat <<EOF
 
 FrontStack installed in: "$install_dir"
 
-To have fun, simply run from your installation directory:
+To have fun, simply run:
 $ vagrant ssh
 
 EOF
