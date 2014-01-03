@@ -33,7 +33,7 @@
 
 ## setup.ini options
 
-See `setup.sample.ini` file. You should remove the config options you don't need.
+See `setup.ini` file. You should remove the config options you don't need.
 
 In order to use it, you must rename it to `setup.ini`.
 
