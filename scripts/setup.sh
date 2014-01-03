@@ -2,7 +2,7 @@
 #
 # FrontStack VM installation and provisioning script
 # @author Tomas Aparicio
-# @version 0.2
+# @version 0.3
 # @license WTFPL
 #
 
@@ -23,6 +23,14 @@ os_packages='gcc make nano wget'
 check_exit() {
   if [ $? -ne 0 ]; then
     echo $1 && exit 1
+  fi
+}
+
+check_sleep() {
+  if [ $? -ne 0 ]; then
+    echo $1
+    echo '\nContinuing with the provisioning...'
+    sleep 2
   fi
 }
 
@@ -273,10 +281,10 @@ if [ ! -z $fs_user ]; then
           echo ". $install_dir/bash.sh" >> "/home/$fs_user/.bash_profile"
         fi
       else
-        # creates a new bash session profile
+        # creates a new bash session profile by default
         echo "#!/bin/bash" > "/home/$fs_user/.bash_profile"
         echo ". $install_dir/bash.sh" >> "/home/$fs_user/.bash_profile"
-        # set permissions
+        # setting permissions
         chown $fs_user:users "/home/$fs_user/.bash_profile" >> $output
         chmod +x "/home/$fs_user/.bash_profile"
       fi
@@ -292,12 +300,33 @@ do
   if [ `exists "$pkg"` -eq 0 ]; then
     echo "Installing $pkg..."
     install_package $pkg >> $output 2>&1
-    check_exit "Cannot install '$pkg' package. See $output"
+    check_exit "Cannot install the '$pkg' package. See $output"
   fi
 done
 
-# exec customized post install script
-if [ ! -n $install_script ] && [ -x $install_script ]; then
+# installing Node.js packages
+if [ ! -z $npm ]; then
+  for pkg in "${npm[@]}"
+  do
+    echo "Installing Node.js package '$pkg'..."
+    npm install $pkg >> $output 2>&1
+    check_sleep "Cannot install the '$pkg' package. See $output"
+  done
+fi
+
+# install Ruby gems
+if [ ! -z $gem ]; then
+  for pkg in "$gem[@]}"
+  do
+    echo "Installing Ruby gem '$pkg'..."
+    gem install $pkg >> $output 2>&1
+    check_sleep "Cannot install the '$pkg' package. See $output"
+  done
+fi
+
+# exec post install script
+if [ ! -n $install_script ] && [ -f $install_script ]; then
+  [ ! -x $install_script ] && chmod +x $install_script
   . "$install_script"
 fi
 
