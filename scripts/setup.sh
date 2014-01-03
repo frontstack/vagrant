@@ -208,10 +208,10 @@ cat <<EOF
  -------------------------------------
 
  VM minimal requirements:
-  * GNU/Linux 64 bits
-  * 768MB RAM
-  * 2GB of hard disk free space
-  * Internet access (HTTP/s protocol)
+  * GNU/Linux 64 bit
+  * 512MB RAM
+  * 2GB HDD
+  * Internet access (HTTP/S)
 
 EOF
 
