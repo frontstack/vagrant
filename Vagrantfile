@@ -45,7 +45,6 @@ Vagrant.configure("2") do |config|
   #
   config.vm.provision "shell" do |s|
     s.path = "scripts/setup.sh"
-    s.args = "/home/vagrant/scripts/setup.ini"
   end
 
 end
