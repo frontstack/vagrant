@@ -15,6 +15,7 @@ install_dir='/home/vagrant/frontstack'
 
 # default install options (you can customize them from setup.ini)
 fs_bash_profile=1
+fs_reset_firewall=0
 fs_format='tar.gz'
 fs_user='vagrant'
 fs_download='http://sourceforge.net/projects/frontstack/files/latest/download'
@@ -129,6 +130,18 @@ download_status() {
   fi
 }
 
+iptables_flush() {
+  iptables -F
+  iptables -X
+  iptables -t nat -F
+  iptables -t nat -X
+  iptables -t mangle -F
+  iptables -t mangle -X
+  iptables -P INPUT ACCEPT
+  iptables -P FORWARD ACCEPT
+  iptables -P OUTPUT ACCEPT
+}
+
 # check OS architecture
 if [ "`uname -m`" != "x86_64" ]; then
   echo 'FrontStack only supports 64 bit based OS. Cannot continue' && exit 1
@@ -177,11 +190,15 @@ make_dir $temporal
 make_dir $download_dir
 
 if [ -d $install_dir ] && [ -f $install_dir/VERSION ]; then
-  echo "FrontStack is already installed. Nothing to do" && exit 0
+  echo "FrontStack is already installed" && exit 0
 fi
 
 if [ `exists wget` -eq 0 ]; then
   install_package wget > /dev/null
+fi
+
+if [ $fs_reset_firewall -eq 1]; then
+  iptables_flush
 fi
 
 cat <<EOF
