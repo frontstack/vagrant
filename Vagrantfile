@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
   #config.vm.box_url = "http://nitron-vagrant.s3-website-us-east-1.amazonaws.com/vagrant_ubuntu_12.04.3_amd64_virtualbox.box"
 
   #
-  # ports to fordward
+  # ports to fordward (customize to your needs)
   #
   config.vm.network :forwarded_port, guest: 3000, host: 3000
   config.vm.network :forwarded_port, guest: 3001, host: 3001
