@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
 
   #
   # Provision package
-  # Do not delete if you don't know exactly what you are doing
+  # Do not delete it if you don't know exactly what you are doing
   #
   config.vm.provision "shell" do |s|
     s.path = "scripts/setup.sh"
