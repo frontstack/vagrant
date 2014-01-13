@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
 
   #
   # Guest resources and custom configuration
-  # do not edit 
+  # Feel free to adapt it to your needs
   # 
   config.vm.provider :virtualbox do |v|
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
@@ -49,7 +49,8 @@ Vagrant.configure("2") do |config|
   # shared directories between guest and host
   #
   config.vm.synced_folder "./workspace", "/home/vagrant/workspace", id: "workspace"
-  config.vm.synced_folder "./scripts", "/home/vagrant/scripts", id: "scripts"
+  # Required for the installation process, after it you can comment the next line
+  config.vm.synced_folder "./setup", "/home/vagrant/setup", id: "setup"
 
   #
   # Provision package
