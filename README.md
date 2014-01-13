@@ -38,8 +38,7 @@ You can comment the options you don't need
 
 ## Issues
 
-FrontStack is in beta stage, some things maybe are broken.
-Please, feel free to report any issue you experiment via Github.
+Please, feel free to report any issue you experiment via Github
 
 ## License
 
