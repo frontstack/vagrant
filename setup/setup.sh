@@ -76,17 +76,37 @@ install_package() {
   fi
 }
 
-save_proxy_vars() {
-  if [ -f $1 ]; then
-    if [ ! -z "$http_proxy" ]; then
-      echo "http_proxy=$http_proxy" >> $1
+save_bash_profile() {
+
+  save_proxy_vars() {
+    if [ -f $1 ]; then
+      if [ ! -z "$http_proxy" ]; then
+        echo "http_proxy=$http_proxy" >> $1
+      fi
+      if [ ! -z "$https_proxy" ]; then
+        echo "https_proxy=$https_proxy" >> $1
+      fi
+      if [ ! -z "$no_proxy" ]; then
+        echo "no_proxy=$no_proxy" >> $1
+      fi
     fi
-    if [ ! -z "$https_proxy" ]; then
-      echo "https_proxy=$https_proxy" >> $1
-    fi
-    if [ ! -z "$no_proxy" ]; then
-      echo "no_proxy=$no_proxy" >> $1
-    fi
+  }
+
+  set_permissions() {
+    chown $conf__frontstack__user $1 >> $output
+    chmod +x $1 >> $output
+  }
+
+  if [ ! -f $1 ]; then
+    echo '#!/bin/bash' > $1
+  fi
+  if [ $(exists `cat $1 | grep "$install_dir"`) -eq 1 ]; then
+    echo 'if [ -f $install_dir/bash.sh ]; then' >> $1
+    echo "  . $install_dir/bash.sh" >> $1
+    echo 'fi' >> $1
+    # add proxy vars
+    save_proxy_vars $1
+    set_permissions $1
   fi
 }
 
@@ -516,30 +536,12 @@ fi
 # set file permissions (by default Vagrant uses the root user to run the provisioning tasks/scripts)
 if [ ! -z $conf__frontstack__user ]; then
   echo "Setting permissions for the '$conf__frontstack__user' user..."
-  chown -R $conf__frontstack__user:users $install_dir >> $output
+  chown -R $conf__frontstack__user $install_dir >> $output
   check_exit "Error while trying to set files permissions. See $output"
 
   # load FrontStack environment variables at session startup (.bash_profile, .profile, .bashrc)
-  if [ $bash_profile == '1' ]; then
-    if [ -d "/home/$conf__frontstack__user" ]; then
-      if [ -f "/home/$conf__frontstack__user/.bash_profile" ]; then
-        if [ $(exists `cat /home/$conf__frontstack__user/.bash_profile | grep "$install_dir"`) -eq 1 ]; then
-          echo 'if [ -f $install_dir/bash.sh ]; then' >> "/home/$conf__frontstack__user/.bash_profile"
-          echo "  . $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
-          echo 'fi' >> "/home/$conf__frontstack__user/.bash_profile"
-          save_proxy_vars "/home/$conf__frontstack__user/.bash_profile"
-        fi
-      else
-        # creates a new bash session profile by default
-        echo '#!/bin/bash' > "/home/$conf__frontstack__user/.bash_profile"
-        echo '. $install_dir/bash.sh' >> "/home/$conf__frontstack__user/.bash_profile"
-        save_proxy_vars "/home/$conf__frontstack__user/.bash_profile"
-
-        # setting permissions
-        chown $conf__frontstack__user:users "/home/$conf__frontstack__user/.bash_profile" >> $output
-        chmod +x "/home/$conf__frontstack__user/.bash_profile"
-      fi
-    fi
+  if [ $bash_profile -eq 1 ]; && [ -d "/home/$conf__frontstack__user" ]; then
+    save_bash_profile "/home/$conf__frontstack__user/.bash_profile"
   fi
 fi
 
