@@ -76,6 +76,20 @@ install_package() {
   fi
 }
 
+save_proxy_vars() {
+  if [ -f $1 ]; then
+    if [ ! -z "$http_proxy" ]; then
+      echo "http_proxy=$http_proxy" >> $1
+    fi
+    if [ ! -z "$https_proxy" ]; then
+      echo "https_proxy=$https_proxy" >> $1
+    fi
+    if [ ! -z "$no_proxy" ]; then
+      echo "no_proxy=$no_proxy" >> $1
+    fi
+  fi
+}
+
 #
 # Copyright (c) 2009    Kevin Porter / Advanced Web Construction Ltd
 #                       (http://coding.tinternet.info, http://webutils.co.uk)
@@ -511,11 +525,14 @@ if [ ! -z $conf__frontstack__user ]; then
       if [ -f "/home/$conf__frontstack__user/.bash_profile" ]; then
         if [ $(exists `cat /home/$conf__frontstack__user/.bash_profile | grep "$install_dir"`) -eq 1 ]; then
           echo ". $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
+          save_proxy_vars "/home/$conf__frontstack__user/.bash_profile"
         fi
       else
         # creates a new bash session profile by default
-        echo "#!/bin/bash" > "/home/$conf__frontstack__user/.bash_profile"
-        echo ". $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
+        echo '#!/bin/bash' > "/home/$conf__frontstack__user/.bash_profile"
+        echo '. $install_dir/bash.sh' >> "/home/$conf__frontstack__user/.bash_profile"
+        save_proxy_vars "/home/$conf__frontstack__user/.bash_profile"
+
         # setting permissions
         chown $conf__frontstack__user:users "/home/$conf__frontstack__user/.bash_profile" >> $output
         chmod +x "/home/$conf__frontstack__user/.bash_profile"
