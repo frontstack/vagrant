@@ -101,7 +101,7 @@ save_bash_profile() {
     echo '#!/bin/bash' > $1
   fi
   if [ $(exists `cat $1 | grep "$install_dir"`) -eq 1 ]; then
-    echo 'if [ -f $install_dir/bash.sh ]; then' >> $1
+    echo "if [ -f $install_dir/bash.sh ]; then" >> $1
     echo "  . $install_dir/bash.sh" >> $1
     echo 'fi' >> $1
     # add proxy vars
