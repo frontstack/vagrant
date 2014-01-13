@@ -575,13 +575,13 @@ if [ ! -z "$conf__provision__gem" ]; then
 fi
 
 # custom provisioning script
-if [ ! -n "$conf__provision__script" ] && [ -f $conf__provision__script ]; then
+if [ ! -z "$conf__provision__script" ] && [ -f $conf__provision__script ]; then
   [ ! -x $conf__provision__script ] && chmod +x $conf__provision__script
   . "$conf__provision__script"
 fi
 
 # exec the custom post-install script
-if [ ! -n "$conf__frontstack__post_install" ] && [ -f $conf__frontstack__post_install ]; then
+if [ ! -z "$conf__frontstack__post_install" ] && [ -f $conf__frontstack__post_install ]; then
   [ ! -x $conf__frontstack__post_install ] && chmod +x $conf__frontstack__post_install
   . "$conf__frontstack__post_install"
 fi
