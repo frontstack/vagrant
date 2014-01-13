@@ -197,7 +197,7 @@ if [ `exists wget` -eq 0 ]; then
   install_package wget > /dev/null
 fi
 
-if [ $fs_reset_firewall -eq 1]; then
+if [ ! -z $fs_reset_firewall ] && [ $fs_reset_firewall -eq 1]; then
   iptables_flush
 fi
 
