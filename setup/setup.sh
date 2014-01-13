@@ -596,7 +596,7 @@ cat <<EOF
 
 FrontStack installed in: "$install_dir"
 
-To enter in the machine, from the Vagrantfile directory, run:
+To enter in the VM, from the Vagrantfile directory, run:
 $ vagrant ssh
 
 EOF
