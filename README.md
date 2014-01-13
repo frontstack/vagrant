@@ -36,6 +36,10 @@
 See [setup.ini][1] file and adapt it to your needs.
 You can comment the options you don't need
 
+## Vagrant CLI
+
+Take a look to the [Vagrant CLI documentation][2] for detailed usage and boxes management
+
 ## Issues
 
 Please, feel free to report any issue you experiment via Github
@@ -45,3 +49,4 @@ Please, feel free to report any issue you experiment via Github
 Scripts under [WTFPL](http://www.wtfpl.net/txt/copying/) license
 
 [1]: https://github.com/frontstack/vagrant/blob/master/setup/setup.ini
+[2]: http://docs.vagrantup.com/v2/cli/index.html
