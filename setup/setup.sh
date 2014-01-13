@@ -90,6 +90,51 @@ save_proxy_vars() {
   fi
 }
 
+proxy_auth() {
+  if [ ! -z $conf__proxy__user ]; then
+    echo "--proxy-user=$conf__proxy__user --proxy-password=$conf__proxy__password "
+  fi
+}
+
+download_status() {
+  if [ -f $1 ]; then
+    while : ; do
+      sleep 1
+
+      local speed=$(echo `cat $1 | grep -oh '\([0-9.]\+[%].*[0-9.][s|m|h|d]\)' | tail -1`)
+      echo -n "Downloading... $speed"
+      echo -n R | tr 'R' '\r'
+
+      if [ -f $2 ]; then
+        sleep 1
+        local error=$(echo `cat $2`)
+        if [ $error != '0' ]; then
+          echo 
+          if [ $error == '6' ]; then
+            echo "Server authentication error, configure setup.ini properly. See $output"
+          else
+            echo "Download error, exit code '$error'. See $output"
+          fi
+          exit $?
+        fi
+        break
+      fi
+    done
+  fi
+}
+
+iptables_flush() {
+  iptables -F
+  iptables -X
+  iptables -t nat -F
+  iptables -t nat -X
+  iptables -t mangle -F
+  iptables -t mangle -X
+  iptables -P INPUT ACCEPT
+  iptables -P FORWARD ACCEPT
+  iptables -P OUTPUT ACCEPT
+}
+
 #
 # Copyright (c) 2009    Kevin Porter / Advanced Web Construction Ltd
 #                       (http://coding.tinternet.info, http://webutils.co.uk)
@@ -324,51 +369,6 @@ read_ini() {
   eval "$INI_NUMSECTIONS_VARNAME=$SECTIONS_NUM"
 
   cleanup_bash
-}
-
-proxy_auth() {
-  if [ ! -z $conf__proxy__user ]; then
-    echo "--proxy-user=$conf__proxy__user --proxy-password=$conf__proxy__password "
-  fi
-}
-
-download_status() {
-  if [ -f $1 ]; then
-    while : ; do
-      sleep 1
-
-      local speed=$(echo `cat $1 | grep -oh '\([0-9.]\+[%].*[0-9.][s|m|h|d]\)' | tail -1`)
-      echo -n "Downloading... $speed"
-      echo -n R | tr 'R' '\r'
-
-      if [ -f $2 ]; then
-        sleep 1
-        local error=$(echo `cat $2`)
-        if [ $error != '0' ]; then
-          echo 
-          if [ $error == '6' ]; then
-            echo "Server authentication error, configure setup.ini properly. See $output"
-          else
-            echo "Download error, exit code '$error'. See $output"
-          fi
-          exit $?
-        fi
-        break
-      fi
-    done
-  fi
-}
-
-iptables_flush() {
-  iptables -F
-  iptables -X
-  iptables -t nat -F
-  iptables -t nat -X
-  iptables -t mangle -F
-  iptables -t mangle -X
-  iptables -P INPUT ACCEPT
-  iptables -P FORWARD ACCEPT
-  iptables -P OUTPUT ACCEPT
 }
 
 # check OS architecture
