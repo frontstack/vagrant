@@ -15,8 +15,8 @@ Vagrant.configure("2") do |config|
   # CentOS 6.5 minimal + VBox Adititions
   # OS release info: https://gist.github.com/casr/e89d304aa46918bbae49
   config.vm.box_url = "http://sourceforge.net/projects/frontstack/files/images/centos65-x86_64-20131219.box/download"
-  # Docker-ready image (future use)
-  #config.vm.box_url = "http://nitron-vagrant.s3-website-us-east-1.amazonaws.com/vagrant_ubuntu_12.04.3_amd64_virtualbox.box"
+  # Docker-ready image
+  #config.vm.box_url = "http://sourceforge.net/projects/frontstack/files/images/vagrant_ubuntu_12.04.3_docker_amd64_virtualbox.box/download"
 
   #
   # ports to fordward (customize to your needs)
@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
   # Do not delete it if you don't know exactly what you are doing
   #
   config.vm.provision "shell" do |s|
-    s.path = "scripts/setup.sh"
+    s.path = "setup/setup.sh"
   end
 
 end
