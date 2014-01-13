@@ -21,14 +21,14 @@
 
   * GNU/Linux 64 bits
   * 512MB RAM (>=768MB recommended)
-  * 1GB HDD
+  * 1GB free disk space
   * Internet access (HTTP/S)
 
 ## Host requirements
 
   * 64 bits OS
   * 2GB RAM (4GB recommended)
-  * 4GB HDD
+  * 4GB free disk space
   * Internet access (HTTP/S)
 
 ## Configuration

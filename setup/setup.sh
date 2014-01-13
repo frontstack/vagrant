@@ -2,7 +2,7 @@
 #
 # FrontStack VM installation and provisioning script
 # @author Tomas Aparicio
-# @version 0.3
+# @version 0.4
 # @license WTFPL
 #
 
@@ -14,12 +14,12 @@ config_file="$(dirname $(readlink -f "$0")})/$(echo ${0##*/} | sed 's/\.[^\.]*$/
 install_dir='/home/vagrant/frontstack'
 
 # default install options (you can customize them from setup.ini)
-fs_bash_profile=1
-fs_reset_firewall=0
-fs_format='tar.gz'
-fs_user='vagrant'
-fs_download='http://sourceforge.net/projects/frontstack/files/latest/download'
-os_packages='gcc make nano wget'
+bash_profile=1
+conf__frontstack__reset_firewall=0
+conf__frontstack__format='tar.gz'
+conf__frontstack__user='vagrant'
+conf__frontstack__download='http://sourceforge.net/projects/frontstack/files/latest/download'
+conf__provision__packages='gcc make nano wget'
 
 check_exit() {
   if [ $? -ne 0 ]; then
@@ -204,7 +204,7 @@ read_ini() {
   
   # IFS is used in "read" and we want to switch it within the loop
   local IFS=$' \t\n'
-  local IFS_OLD="${IFS}"
+  local Iconf__frontstack__OLD="${IFS}"
   
   # we need some optional shell behavior (shopt) but want to restore
   # current settings before returning
@@ -250,7 +250,7 @@ read_ini() {
     # split line at "=" sign
     IFS="="
     read -r VAR VAL <<< "${line}"
-    IFS="${IFS_OLD}"
+    IFS="${Iconf__frontstack__OLD}"
     
     # delete spaces around the equal sign (using extglob)
     VAR="${VAR%%+([[:space:]])}"
@@ -313,8 +313,8 @@ read_ini() {
 }
 
 proxy_auth() {
-  if [ ! -z $proxy_user ]; then
-    echo "--proxy-user=$proxy_user --proxy-password=$proxy_password "
+  if [ ! -z $conf__proxy__user ]; then
+    echo "--proxy-user=$conf__proxy__user --proxy-password=$conf__proxy__password "
   fi
 }
 
@@ -383,6 +383,18 @@ if [ -f $config_file ]; then
   read_ini $config_file -p conf
   check_exit "Error while parsing config ini file: $config_file"
   
+  if [ ! -z "$conf__proxy__http_proxy" ]; then
+    http_proxy=$conf__proxy__http_proxy
+  fi
+
+  if [ ! -z "$conf__proxy__https_proxy" ]; then
+    https_proxy=$conf__proxy__https_proxy
+  fi
+
+  if [ ! -z "$conf__proxy__no_proxy" ]; then
+    no_proxy=$conf__proxy__no_proxy
+  fi
+
   if [ ! -z "$conf__frontstack__install" ]; then
     install_dir=$conf__frontstack__install
   fi
@@ -400,7 +412,7 @@ if [ `exists wget` -eq 0 ]; then
   install_package wget > /dev/null
 fi
 
-if [ ! -z "$conf__frontstack__reset_firewall" ] && [ $conf__frontstack__reset_firewall -eq 1 ]; then
+if [ "$conf__frontstack__reset_firewall" -eq 1 ]; then
   iptables_flush
 fi
 
@@ -410,10 +422,10 @@ cat <<EOF
          Welcome to FrontStack
  -------------------------------------
 
- VM minimal requirements:
+ Minimal requirements:
   * GNU/Linux 64 bit
   * 512MB RAM
-  * 2GB HDD
+  * 1GB free disk space
   * Internet access (HTTP/S)
 
 EOF
@@ -422,7 +434,7 @@ wget $(proxy_auth) http://yahoo.com -O $download_dir/test.html > $output 2>&1
 check_exit "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $output"
 rm -f $download_dir/test.*
 
-if [ $conf_frontstack_format == '7z' ] || [ $conf_frontstack_format == 'zip' ]; then
+if [ "$conf_frontstack_format" == '7z' ] || [ "$conf_frontstack_format" == 'zip' ]; then
   if [ `exists 7z` -eq 0 ]; then
     if [ ! -f $temporal/7zip/7z ]; then
       echo -n "Downloding 7z... "
@@ -438,7 +450,7 @@ if [ $conf_frontstack_format == '7z' ] || [ $conf_frontstack_format == 'zip' ]; 
       COMPRESSBIN=$temporal/7zip/7z
     fi
   fi
-elif [ $conf_frontstack_format == 'rpm' ]; then
+elif [ "$conf_frontstack_format" == 'rpm' ]; then
   if [ -z $(echo `which rpm`) ]; then
     echo 'rpm package not supported, use another. Cannot continue'
     exit 1
@@ -457,63 +469,63 @@ if [ -f $download_dir/download ]; then
 fi
 
 # download stack distribution
-if [ -z $fs_http_user ]; then
-    `wget $(proxy_auth) -F $fs_download -O $download_dir/frontstack-latest.$fs_format > $output 2>&1 && echo $? > $download_dir/download || echo $? > $download_dir/download` &
+if [ -z "$conf__frontstack__http_user" ]; then
+    `wget $(proxy_auth) -F $conf__frontstack__download -O $download_dir/frontstack-latest.$conf__frontstack__format > $output 2>&1 && echo $? > $download_dir/download || echo $? > $download_dir/download` &
     download_status $output $download_dir/download
 else
-  `wget $(proxy_auth) -F --user=$fs_http_user --password=$fs_http_password $fs_download -O $download_dir/frontstack-latest.$fs_format > $output 2>&1  && echo $? > $download_dir/download || echo $? > $download_dir/download` &
+  `wget $(proxy_auth) -F --user=$conf__frontstack__http_user --password=$conf__frontstack__http_password $conf__frontstack__download -O $download_dir/frontstack-latest.$conf__frontstack__format > $output 2>&1  && echo $? > $download_dir/download || echo $? > $download_dir/download` &
   download_status $output $download_dir/download
 fi
 check_exit "Error while trying to download FrontStack. See $output"
 
-if [ $fs_format == 'rpm' ]; then
+if [ $conf__frontstack__format == 'rpm' ]; then
   if [ `exists rpm` -eq 0 ]; then
     echo "No rpm binary found. Cannot continue" && exit 1
   fi
 
   echo -n "Installing RPM... "
-  rpm -ivh $download_dir/frontstack-latest.$fs_format >> $output 2>&1
+  rpm -ivh $download_dir/frontstack-latest.$conf__frontstack__format >> $output 2>&1
   check_exit "Error while trying to install the RPM. See $output"
   echo 'done!'
 else
   echo -n 'Extracting (this may take some minutes)... '
   make_dir $install_dir
-  if [ $fs_format == '7z' ]; then
-    $COMPRESSBIN e -o$install_dir -y $download_dir/frontstack-latest.$fs_format >> $output 2>&1
+  if [ $conf__frontstack__format == '7z' ]; then
+    $COMPRESSBIN e -o$install_dir -y $download_dir/frontstack-latest.$conf__frontstack__format >> $output 2>&1
   else
-    $COMPRESSBIN xvfz $download_dir/frontstack-latest.$fs_format -C $install_dir >> $output 2>&1
+    $COMPRESSBIN xvfz $download_dir/frontstack-latest.$conf__frontstack__format -C $install_dir >> $output 2>&1
   fi
   check_exit "Error while trying to extract FrontStack. See $output"
   echo 'done!'
 fi
 
 # set file permissions (by default Vagrant uses the root user to run the provisioning tasks/scripts)
-if [ ! -z $fs_user ]; then
-  echo "Setting permissions for the '$fs_user' user..."
-  chown -R $fs_user:users $install_dir >> $output
+if [ ! -z $conf__frontstack__user ]; then
+  echo "Setting permissions for the '$conf__frontstack__user' user..."
+  chown -R $conf__frontstack__user:users $install_dir >> $output
   check_exit "Error while trying to set files permissions. See $output"
 
   # load FrontStack environment variables at session startup (.bash_profile, .profile, .bashrc)
-  if [ $fs_bash_profile == '1' ]; then
-    if [ -d "/home/$fs_user" ]; then
-      if [ -f "/home/$fs_user/.bash_profile" ]; then
-        if [ $(exists `cat /home/$fs_user/.bash_profile | grep "$install_dir"`) -eq 1 ]; then
-          echo ". $install_dir/bash.sh" >> "/home/$fs_user/.bash_profile"
+  if [ $bash_profile == '1' ]; then
+    if [ -d "/home/$conf__frontstack__user" ]; then
+      if [ -f "/home/$conf__frontstack__user/.bash_profile" ]; then
+        if [ $(exists `cat /home/$conf__frontstack__user/.bash_profile | grep "$install_dir"`) -eq 1 ]; then
+          echo ". $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
         fi
       else
         # creates a new bash session profile by default
-        echo "#!/bin/bash" > "/home/$fs_user/.bash_profile"
-        echo ". $install_dir/bash.sh" >> "/home/$fs_user/.bash_profile"
+        echo "#!/bin/bash" > "/home/$conf__frontstack__user/.bash_profile"
+        echo ". $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
         # setting permissions
-        chown $fs_user:users "/home/$fs_user/.bash_profile" >> $output
-        chmod +x "/home/$fs_user/.bash_profile"
+        chown $conf__frontstack__user:users "/home/$conf__frontstack__user/.bash_profile" >> $output
+        chmod +x "/home/$conf__frontstack__user/.bash_profile"
       fi
     fi
   fi
 fi
 
 # installing OS packages (beta)
-install_packages="$os_packages $install_packages"
+install_packages="$os_packages $conf__provision__packages"
 install_packages=("$install_packages")
 for pkg in "${install_packages[@]}"
 do
@@ -525,8 +537,8 @@ do
 done
 
 # installing Node.js packages
-if [ ! -z $npm ]; then
-  for pkg in "${npm[@]}"
+if [ ! -z "$conf__provision__npm" ]; then
+  for pkg in "${conf__provision__npm[@]}"
   do
     echo "Installing Node.js package '$pkg'..."
     npm install $pkg >> $output 2>&1
@@ -535,8 +547,8 @@ if [ ! -z $npm ]; then
 fi
 
 # install Ruby gems
-if [ ! -z $gem ]; then
-  for pkg in "$gem[@]}"
+if [ ! -z "$conf__provision__gem" ]; then
+  for pkg in "$conf__provision__gem[@]}"
   do
     echo "Installing Ruby gem '$pkg'..."
     gem install $pkg >> $output 2>&1
@@ -544,10 +556,16 @@ if [ ! -z $gem ]; then
   done
 fi
 
-# exec post install script
-if [ ! -n $install_script ] && [ -f $install_script ]; then
-  [ ! -x $install_script ] && chmod +x $install_script
-  . "$install_script"
+# custom provisioning script
+if [ ! -n "$conf__provision__script" ] && [ -f $conf__provision__script ]; then
+  [ ! -x $conf__provision__script ] && chmod +x $conf__provision__script
+  . "$conf__provision__script"
+fi
+
+# exec the custom post-install script
+if [ ! -n "$conf__frontstack__post_install" ] && [ -f $conf__frontstack__post_install ]; then
+  [ ! -x $conf__frontstack__post_install ] && chmod +x $conf__frontstack__post_install
+  . "$conf__frontstack__post_install"
 fi
 
 # re-enable SELinux
