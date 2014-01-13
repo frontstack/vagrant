@@ -540,7 +540,7 @@ if [ ! -z $conf__frontstack__user ]; then
   check_exit "Error while trying to set files permissions. See $output"
 
   # load FrontStack environment variables at session startup (.bash_profile, .profile, .bashrc)
-  if [ $bash_profile -eq 1 ]; && [ -d "/home/$conf__frontstack__user" ]; then
+  if [ $bash_profile -eq 1 ] && [ -d "/home/$conf__frontstack__user" ]; then
     save_bash_profile "/home/$conf__frontstack__user/.bash_profile"
   fi
 fi
