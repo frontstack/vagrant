@@ -53,8 +53,8 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./setup", "/home/vagrant/setup", id: "setup"
 
   #
-  # Provision package
-  # Do not delete it if you don't know exactly what you are doing
+  # FrontStack provisioning and setup
+  # You can comment the following lines when FrontStack was installed
   #
   config.vm.provision "shell" do |s|
     s.path = "setup/setup.sh"
