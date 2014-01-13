@@ -524,7 +524,9 @@ if [ ! -z $conf__frontstack__user ]; then
     if [ -d "/home/$conf__frontstack__user" ]; then
       if [ -f "/home/$conf__frontstack__user/.bash_profile" ]; then
         if [ $(exists `cat /home/$conf__frontstack__user/.bash_profile | grep "$install_dir"`) -eq 1 ]; then
-          echo ". $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
+          echo 'if [ -f $install_dir/bash.sh ]; then' >> "/home/$conf__frontstack__user/.bash_profile"
+          echo "  . $install_dir/bash.sh" >> "/home/$conf__frontstack__user/.bash_profile"
+          echo 'fi' >> "/home/$conf__frontstack__user/.bash_profile"
           save_proxy_vars "/home/$conf__frontstack__user/.bash_profile"
         fi
       else
