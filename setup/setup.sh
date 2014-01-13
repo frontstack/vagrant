@@ -393,7 +393,7 @@ fi
 
 # read config file
 if [ -f $config_file ]; then
-  #config_parser $config_file
+
   read_ini $config_file -p conf
   check_exit "Error while parsing config ini file: $config_file"
 
