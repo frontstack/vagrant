@@ -396,7 +396,7 @@ if [ -f $config_file ]; then
   #config_parser $config_file
   read_ini $config_file -p conf
   check_exit "Error while parsing config ini file: $config_file"
-  
+
   if [ ! -z "$conf__proxy__http_proxy" ]; then
     http_proxy=$conf__proxy__http_proxy
   fi
@@ -554,6 +554,7 @@ done
 
 # installing Node.js packages
 if [ ! -z "$conf__provision__npm" ]; then
+  conf__provision__npm=("$conf__provision__npm")
   for pkg in "${conf__provision__npm[@]}"
   do
     echo "Installing Node.js package '$pkg'..."
@@ -564,6 +565,7 @@ fi
 
 # install Ruby gems
 if [ ! -z "$conf__provision__gem" ]; then
+  conf__provision__gem=("$conf__provision__gem")
   for pkg in "$conf__provision__gem[@]}"
   do
     echo "Installing Ruby gem '$pkg'..."
