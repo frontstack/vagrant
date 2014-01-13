@@ -102,7 +102,7 @@ download_status() {
       sleep 1
 
       local speed=$(echo `cat $1 | grep -oh '\([0-9.]\+[%].*[0-9.][s|m|h|d]\)' | tail -1`)
-      echo -n "Downloading... $speed"
+      echo -n ">> Downloading... $speed"
       echo -n R | tr 'R' '\r'
 
       if [ -f $2 ]; then
