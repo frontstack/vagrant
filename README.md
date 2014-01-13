@@ -21,7 +21,7 @@
 
   * GNU/Linux 64 bits
   * 512MB RAM (>=768MB recommended)
-  * 2GB HDD
+  * 1GB HDD
   * Internet access (HTTP/S)
 
 ## Host requirements
