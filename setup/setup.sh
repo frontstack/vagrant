@@ -382,9 +382,6 @@ if [ -f $config_file ]; then
   #config_parser $config_file
   read_ini $config_file -p conf
   check_exit "Error while parsing config ini file: $config_file"
-
-  echo "Value: ${conf__frontstack__reset_firewall}"
-  exit 
   
   if [ ! -z "$conf__frontstack__install" ]; then
     install_dir=$conf__frontstack__install
@@ -425,7 +422,7 @@ wget $(proxy_auth) http://yahoo.com -O $download_dir/test.html > $output 2>&1
 check_exit "No Internet HTTP connectivity. Check if you are behind a proxy and your authentication credentials. See $output"
 rm -f $download_dir/test.*
 
-if [ $fs_format == '7z' ] || [ $fs_format == 'zip' ]; then
+if [ $conf_frontstack_format == '7z' ] || [ $conf_frontstack_format == 'zip' ]; then
   if [ `exists 7z` -eq 0 ]; then
     if [ ! -f $temporal/7zip/7z ]; then
       echo -n "Downloding 7z... "
@@ -441,9 +438,9 @@ if [ $fs_format == '7z' ] || [ $fs_format == 'zip' ]; then
       COMPRESSBIN=$temporal/7zip/7z
     fi
   fi
-elif [ $fs_format == 'rpm' ]; then
+elif [ $conf_frontstack_format == 'rpm' ]; then
   if [ -z $(echo `which rpm`) ]; then
-    echo 'rpm package is not installed. Cannot continue'
+    echo 'rpm package not supported, use another. Cannot continue'
     exit 1
   fi
 else

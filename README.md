@@ -31,11 +31,10 @@
   * 4GB HDD
   * Internet access (HTTP/S)
 
-## setup.ini options
+## Configuration
 
-See `setup.ini` file. You should remove the config options you don't need.
-
-In order to use it, you must rename it to `setup.ini`.
+See [setup.ini][1] file and adapt it to your needs.
+You can comment the options you don't need
 
 ## Issues
 
@@ -45,3 +44,5 @@ Please, feel free to report any issue you experiment via Github.
 ## License
 
 Scripts under [WTFPL](http://www.wtfpl.net/txt/copying/) license
+
+[1]: https://github.com/frontstack/vagrant/blob/master/setup/setup.ini
