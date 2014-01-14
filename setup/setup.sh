@@ -15,11 +15,11 @@ install_dir='/home/vagrant/frontstack'
 
 # default install options (you can customize them from setup.ini)
 bash_profile=1
+os_packages='gcc make nano wget'
 conf__frontstack__reset_firewall=0
 conf__frontstack__format='tar.gz'
 conf__frontstack__user='vagrant'
 conf__frontstack__download='http://sourceforge.net/projects/frontstack/files/latest/download'
-conf__provision__packages='gcc make nano wget'
 
 check_exit() {
   if [ $? -ne 0 ]; then
