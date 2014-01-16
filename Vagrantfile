@@ -12,9 +12,11 @@ Vagrant.configure("2") do |config|
   #
   # configure your box image
   #
+  # Ubuntu 12.04 x86_64
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   # CentOS 6.5 minimal + VBox Adititions
-  # OS release info: https://gist.github.com/casr/e89d304aa46918bbae49
-  config.vm.box_url = "http://sourceforge.net/projects/frontstack/files/images/centos65-x86_64-20131219.box/download"
+  # Image details: https://gist.github.com/casr/e89d304aa46918bbae49
+  #config.vm.box_url = "http://sourceforge.net/projects/frontstack/files/images/centos65-x86_64-20131219.box/download"
   # Docker-ready image
   #config.vm.box_url = "http://sourceforge.net/projects/frontstack/files/images/vagrant_ubuntu_12.04.3_docker_amd64_virtualbox.box/download"
 
