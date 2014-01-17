@@ -43,16 +43,17 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--memory", 768]
     v.customize ["modifyvm", :id, "--name", "FrontStack VM"]
     v.customize ["modifyvm", :id, "--ioapic", "on" ]
-    v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
-    v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/workspace", "1"]
   end
 
   #
-  # shared directories between guest and host
+  # Shared folders between guest and host
   #
   config.vm.synced_folder "./workspace", "/home/vagrant/workspace", id: "workspace"
   # Required for the installation process, after it you can comment the next line
   config.vm.synced_folder "./setup", "/home/vagrant/setup", id: "setup"
+  # Enables symlinks supports for shared folders
+  v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
+  v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/workspace", "1"]
 
   #
   # FrontStack provisioning and setup
