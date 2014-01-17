@@ -1,4 +1,4 @@
-# FrontStack Vagrant
+# Vagrant + FrontStack
 
 ## Usage
 
