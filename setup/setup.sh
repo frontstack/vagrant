@@ -50,6 +50,10 @@ exists() {
   fi
 }
 
+set_folder_permissions() {
+  chown -R $conf__frontstack__user $1 >> $output
+}
+
 install_package() {
   if [ -z $nopkgmanager ]; then
     # Debian, Ubuntu and derivatives (with apt-get)
@@ -589,6 +593,9 @@ if [ ! -z "$conf__frontstack__post_install" ] && [ -f $conf__frontstack__post_in
   [ ! -x $conf__frontstack__post_install ] && chmod +x $conf__frontstack__post_install
   . "$conf__frontstack__post_install"
 fi
+
+# seting folders permissions to the vagrant user
+set_folder_permissions "${install_dir}/packages"
 
 # re-enable SELinux
 if [ -f "/usr/sbin/getenforce" ]; then
