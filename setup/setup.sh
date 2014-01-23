@@ -553,8 +553,6 @@ install_packages="${os_packages} ${conf__provision__packages}"
 install_packages=( $install_packages )
 for pkg in ${install_packages[@]}
 do
-  echo $pkg
-  echo "exists > " `exists "$pkg"`
   if [ `exists "$pkg"` -eq 0 ]; then
     echo "Installing $pkg..."
     install_package $pkg >> $output 2>&1
