@@ -57,7 +57,6 @@ Vagrant.configure("2") do |config|
 
   #
   # FrontStack provisioning and setup
-  # You can comment the following lines when FrontStack was installed
   #
   config.vm.provision "shell" do |s|
     s.path = "setup/setup.sh"

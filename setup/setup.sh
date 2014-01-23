@@ -417,7 +417,6 @@ fi
 
 # read config file
 if [ -f $config_file ]; then
-
   read_ini $config_file -p conf
   check_exit "Error while parsing config ini file: $config_file"
 
@@ -550,8 +549,9 @@ if [ ! -z $conf__frontstack__user ]; then
 fi
 
 # installing OS packages (beta)
-install_packages=("$os_packages $conf__provision__packages")
-for pkg in "${install_packages[@]}"
+install_packages="${os_packages} ${conf__provision__packages}"
+install_packages=( $os_packages )
+for pkg in ${install_packages[@]}
 do
   if [ `exists "$pkg"` -eq 0 ]; then
     echo "Installing $pkg..."
@@ -563,7 +563,7 @@ done
 # installing Node.js packages
 if [ ! -z "$conf__provision__npm" ]; then
   conf__provision__npm=("$conf__provision__npm")
-  for pkg in "${conf__provision__npm[@]}"
+  for pkg in ${conf__provision__npm[@]}
   do
     echo "Installing Node.js package '$pkg'..."
     npm install $pkg >> $output 2>&1
@@ -574,7 +574,7 @@ fi
 # install Ruby gems
 if [ ! -z "$conf__provision__gem" ]; then
   conf__provision__gem=("$conf__provision__gem")
-  for pkg in "$conf__provision__gem[@]}"
+  for pkg in ${conf__provision__gem[@]}
   do
     echo "Installing Ruby gem '$pkg'..."
     gem install $pkg >> $output 2>&1
@@ -597,10 +597,6 @@ fi
 # seting folders permissions to the vagrant user
 if [ -d "${install_dir}/packages" ]; then
   set_folder_permissions "${install_dir}/packages"
-fi
-
-if [ -f "/home/${conf__frontstack__user}/workspace/noempty" ]; then
-  rm -f "/home/${conf__frontstack__user}/workspace/noempty"
 fi
 
 # re-enable SELinux
