@@ -595,7 +595,13 @@ if [ ! -z "$conf__frontstack__post_install" ] && [ -f $conf__frontstack__post_in
 fi
 
 # seting folders permissions to the vagrant user
-set_folder_permissions "${install_dir}/packages"
+if [ -d "${install_dir}/packages" ]; then
+  set_folder_permissions "${install_dir}/packages"
+fi
+
+if [ -f "/home/${conf__frontstack__user}/workspace/noempty" ]; then
+  rm -f "/home/${conf__frontstack__user}/workspace/noempty"
+fi
 
 # re-enable SELinux
 if [ -f "/usr/sbin/getenforce" ]; then
