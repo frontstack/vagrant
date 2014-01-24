@@ -437,6 +437,7 @@ if [ -f $config_file ]; then
   fi
 fi
 
+
 # creates temporal directories
 make_dir $temporal
 make_dir $download_dir
@@ -539,6 +540,7 @@ fi
 # set file permissions (by default Vagrant uses the root user to run the provisioning tasks/scripts)
 if [ ! -z $conf__frontstack__user ]; then
   echo "Setting permissions for the '$conf__frontstack__user' user..."
+  echo
   chown -R $conf__frontstack__user $install_dir >> $output
   check_exit "Error while trying to set files permissions. See $output"
 
@@ -594,9 +596,14 @@ if [ ! -z "$conf__frontstack__post_install" ] && [ -f $conf__frontstack__post_in
   . "$conf__frontstack__post_install"
 fi
 
-# seting folders permissions to the vagrant user
+# setting folders permissions to the vagrant user
 if [ -d "${install_dir}/packages" ]; then
   set_folder_permissions "${install_dir}/packages"
+fi
+
+# seting folders permissions to the vagrant user
+if [ -d "/home/${conf__frontstack__user}/workspace" ]; then
+  rm -f  "/home/${conf__frontstack__user}/workspace/noempty"
 fi
 
 # re-enable SELinux
