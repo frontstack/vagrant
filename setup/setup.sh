@@ -2,7 +2,7 @@
 #
 # FrontStack VM installation and provisioning script
 # @author Tomas Aparicio
-# @version 0.5ls
+# @version 0.5
 # @license WTFPL
 #
 
