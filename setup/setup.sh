@@ -601,7 +601,7 @@ if [ -d "${install_dir}/packages" ]; then
   set_folder_permissions "${install_dir}/packages"
 fi
 
-# seting folders permissions to the vagrant user
+# remove git required noempty file in the workspace directory
 if [ -d "/home/${conf__frontstack__user}/workspace" ]; then
   rm -f  "/home/${conf__frontstack__user}/workspace/noempty"
 fi
